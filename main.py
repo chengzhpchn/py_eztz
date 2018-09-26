@@ -65,7 +65,7 @@ def sign(pkh, passphrase, data):
     _, encrypted_sk = result[0]
     sk = crypto.aes_decrypt(encrypted_sk, passphrase.encode('utf-8'))
     sigs = crypto.sign( a2b_hex(data.encode('utf-8')), sk, crypto.watermark_generic)
-    return {'edsig':b2a_hex( sigs['edsig'] ).decode('utf-8'),
+    return {'edsig':sigs['edsig'].decode('utf-8'),
             'sbytes':b2a_hex( sigs['sbytes'] ).decode('utf-8')}
 
 class AccountManager:
