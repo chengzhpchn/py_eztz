@@ -1,0 +1,7 @@
+https://github.com/jedisct1/libsodium
+https://github.com/stef/pysodium.git
+https://github.com/trezor/python-mnemonic.git
+https://github.com/dlitz/python-pbkdf2.git
+git://github.com/cenobites/flask-jsonrpc.git
+python3.6 -m pip install base58
+python3.6 -m pip install pycrypto
