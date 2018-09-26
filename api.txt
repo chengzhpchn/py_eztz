@@ -1,0 +1,15 @@
+curl -i -X POST -H "Content-Type: application/json; indent=4"    -d '{
+    "jsonrpc": "2.0",
+    "method": "new_account",
+    "params": ["123456"],
+    "id": "1"
+}' http://localhost:5000/api
+
+
+
+curl -i -X POST -H "Content-Type: application/json; indent=4"    -d '{
+    "jsonrpc": "2.0",
+    "method": "sign",
+    "params": {"pkh":"tz1NDu5t2crsfJJujYMYgWmDW68pe9JB3GMb", "passphrase":"123456", "data":"01020304"},
+    "id": "1"
+}' http://localhost:5000/api
