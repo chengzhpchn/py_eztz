@@ -51,7 +51,7 @@ def new_account(passphrase):
 
     return pkh.decode('utf-8')
 
-@jsonrpc.method('sign(pkh=String, passphrase=String, data=String) -> dict')
+@jsonrpc.method('sign(pkh=String, passphrase=String, data=String) -> String')
 def sign(pkh, passphrase, data):
     pkh = pkh.encode('utf-8')
     result = []
@@ -59,10 +59,9 @@ def sign(pkh, passphrase, data):
     if err:
         return err
     _, encrypted_sk = result[0]
-    import pdb; pdb.set_trace()
     sk = crypto.aes_decrypt(encrypted_sk, passphrase.encode('utf-8'))
     sigs = crypto.sign( a2b_hex(data.encode('utf-8')), sk, crypto.watermark_generic)
-    return {}
+    return b2a_hex( sigs['edsig'] ).decode('utf-8')
 
 class AccountManager:
     account_file_fmt = "./accounts/py-eztz-account-%s.json"
