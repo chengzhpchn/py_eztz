@@ -51,6 +51,10 @@ def new_account(passphrase):
 
     return pkh.decode('utf-8')
 
+@jsonrpc.method('chk_address')
+def chk_address(tz1_address):
+    return crypto.checkAddress(tz1_address)
+
 @jsonrpc.method('sign(pkh=String, passphrase=String, data=String) -> String')
 def sign(pkh, passphrase, data):
     pkh = pkh.encode('utf-8')

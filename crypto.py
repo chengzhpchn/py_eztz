@@ -28,6 +28,13 @@ def generateKeysNoSeed():
     pkh = pysodium.crypto_generichash(pk, outlen=20)
     return utility.base58Encode(prefix_tz1, pkh), utility.base58Encode(prefix_edpk, pk), utility.base58Encode(prefix_edsk, sk)
 
+def checkAddress(pkh):
+    try:
+        utility.base58Decode(prefix_tz1, pkh)
+        return True
+    except:
+        return False
+
 def sign(data, sk, watermark):
     '''
     :param data: bytes
