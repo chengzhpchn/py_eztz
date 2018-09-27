@@ -19,3 +19,23 @@ curl -i -X POST -H "Content-Type: application/json; indent=4"    -d '{
     "params": {"pkh":"tz1NDu5t2crsfJJujYMYgWmDW68pe9JB3GMb", "passphrase":"123456", "data":"9a4d6f3c1424f28469ed6cd8e2b3f87f34b65e70a8875b4b11a123572ad5cc23080000c3f6cdae8399645e28fadd1cecf9978ad3f7baef904ecfd409c80100660000c3f6cdae8399645e28fadd1cecf9978ad3f7baef00"},
     "id": "1"
 }' http://localhost:5001/api
+
+
+
+
+sign bytes data for src
+Sign a raw sequence of bytes and display it using the format expected by Michelson instruction `CHECK_SIGNATURE`.
+data: the raw data to sign
+src: source secret_key
+  Can be a secret_key name, a file or a raw secret_key literal. If the
+  parameter is not the name of an existing secret_key, the client will look
+  for a file containing a secret_key, and if it does not exist, the argument
+  will be read as a raw secret_key.
+  Use 'alias:name', 'file:path' or 'text:literal' to disable autodetect.
+
+check that bytes was signed by key to produce signature [-q --quiet]
+Check the signature of a byte sequence as per Michelson instruction `CHECK_SIGNATURE`.
+bytes: the signed data
+key: existing public_key alias
+signature: the signature to check
+-q --quiet: Use only exit codes

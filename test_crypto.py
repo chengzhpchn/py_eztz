@@ -1,4 +1,5 @@
 from unittest import TestCase
+from binascii import b2a_hex, a2b_hex
 import crypto
 
 class TestCrypto(TestCase):
@@ -14,7 +15,19 @@ class TestCrypto(TestCase):
         self.assertEqual(b'edskRoRpyuhCbSjvUhJH3knGm53rVwdeNx4wuqaLRaCSd4gZzTbmTumHBFZRPNMSNsDv7AUnpuNZPDtx9qhuZ2vGVAFFx6aVpX', sk)
 
     def test_2_sign(self):
-        pass
+        mnemonic = "express rare deer foam soccer limit reflect luggage assault false major evil bunker rice pact"
+        passphrase = 'tester'
+        pk = b"edpkvTUTgDY4eWtHdVcPDNzhFV8Qhf7DfEJmkae15aGJTcXtKnM33D"
+        pkh = b"tz1fgjPvZMVUz8ryk9KeZFr7UecGb3kn8A8q"
+        sk = b"edskS32v5a727D85nRW3bxDtV78BjYqX8cTPp9vPcCWyf7tqgJYhSMmstFV3NtMjfrsqEVMDxNHBA1X31d1PQ1LK1WXmBqez1n"
+        self.assertEqual(crypto.generateKeys(mnemonic, passphrase), (pkh, pk, sk))
+
+        edsig = b"edsigtwfLQwXxaudeAWXqeT9oKaBCV8DqD2PWpgRetFKf6mqJu4gkSaDohmGipidnVGL9WigELiRQ8w5RHroJ1Zp8MWL3oi9L1W"
+        data = "9a4d6f3c1424f28469ed6cd8e2b3f87f34b65e70a8875b4b11a123572ad5cc23080000c3f6cdae8399645e28fadd1cecf9978ad3f7baef904ecfd409c80100660000c3f6cdae8399645e28fadd1cecf9978ad3f7baef00"
+        #data1 = b"9a4d6f3c1424f28469ed6cd8e2b3f87f34b65e70a8875b4b11a123572ad5cc23080000c3f6cdae8399645e28fadd1cecf9978ad3f7baef904ecfd409c80100660000c3f6cdae8399645e28fadd1cecf9978ad3f7baef00"
+        data2 = a2b_hex(data)
+        #print(crypto.sign(data1, sk, crypto.watermark_generic)['edsig'])
+        self.assertEqual(edsig, crypto.sign(data2, sk, crypto.watermark_generic)['edsig'])
 
     def test_3_verfy(self):
         pass
@@ -26,3 +39,4 @@ class TestCrypto(TestCase):
         #import pdb; pdb.set_trace()
         self.assertEqual(encrypted, crypto.aes_encrypt(expected, passphrase))
         self.assertEqual(expected, crypto.aes_decrypt(encrypted, passphrase))
+

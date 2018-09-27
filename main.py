@@ -64,7 +64,7 @@ def sign(pkh, passphrase, data):
         return err
     _, encrypted_sk = result[0]
     sk = crypto.aes_decrypt(encrypted_sk, passphrase.encode('utf-8'))
-    sigs = crypto.sign( a2b_hex(data.encode('utf-8')), sk, crypto.watermark_generic)
+    sigs = crypto.sign( a2b_hex(data), sk, crypto.watermark_generic)
     return {'edsig':sigs['edsig'].decode('utf-8'),
             'sbytes':b2a_hex( sigs['sbytes'] ).decode('utf-8')}
 
@@ -89,7 +89,7 @@ class AccountManager:
             return "account[%s] not exist" % pkh.decode('utf-8')
         with open(filename, 'r') as fr:
             data = json.loads(fr.read())
-            result.append( (data['public-key'].encode('utf-8'), a2b_hex(data['encrypted-private-key'].encode('utf-8'))) )
+            result.append( (data['public-key'].encode('utf-8'), a2b_hex(data['encrypted-private-key'])) )
 
 
 if __name__ == '__main__':
