@@ -52,7 +52,7 @@ def sign(data, sk, watermark):
         utility.base58Decode(prefix_edsk, sk)
     )
     edsig = utility.base58Encode(prefix_edsig, sig)
-    sbytes = sig + data
+    sbytes = data + sig
     return {
         'bytes' : data,
         'sig' : sig,
