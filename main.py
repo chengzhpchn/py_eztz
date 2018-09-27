@@ -70,6 +70,11 @@ def import_account(mnemonic, seed_passphrase, enc_passphrase):
 def chk_address(tz1_address):
     return crypto.checkAddress(str2bytes(tz1_address))
 
+@jsonrpc.method('get_publickey')
+def get_publickey(tz1_address):
+    pk, _ = AccountManager.load_account(str2bytes(tz1_address))
+    return bytes2str(pk)
+
 @jsonrpc.method('sign(pkh=String, passphrase=String, data=String) -> dict')
 def sign(pkh, passphrase, data):
     _, encrypted_sk = AccountManager.load_account(str2bytes(pkh))
@@ -82,7 +87,7 @@ def sign(pkh, passphrase, data):
 
 class AccountManager:
     account_file_fmt = "./accounts/py-eztz-account-%s.json"
-
+    buff = {} # pkh :  (pk, enc_sk)
     @classmethod
     def save_account(cls, pkh, pk, encrypted_sk):
         filename = cls.account_file_fmt % bytes2str(pkh)
@@ -95,13 +100,17 @@ class AccountManager:
 
     @classmethod
     def load_account(cls, pkh):
+        if pkh in cls.buff:
+            return cls.buff[pkh]
         import os
         filename = cls.account_file_fmt % bytes2str(pkh)
         if not os.path.exists(filename):
             raise InvalidParamsError("account[%s] not exist" % bytes2str(pkh))
         with open(filename, 'r') as fr:
             data = json.loads(fr.read())
-            return str2bytes(data['public-key']), a2b_hex(data['encrypted-private-key'])
+            ret = ( str2bytes(data['public-key']), a2b_hex(data['encrypted-private-key']) )
+            cls.buff[pkh] = ret
+            return ret
 
 
 if __name__ == '__main__':
