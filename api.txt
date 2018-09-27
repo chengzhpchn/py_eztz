@@ -8,15 +8,21 @@ curl -i -X POST -H "Content-Type: application/json; indent=4"    -d '{
 curl -i -X POST -H "Content-Type: application/json; indent=4"    -d '{
     "jsonrpc": "2.0",
     "method": "chk_address",
-    "params": ["tz1NDu5t2crsfJJujYMYgWmDW68pe9JB3GMb"],
+    "params": ["tz1SyKx9ZMq1mcfqsjHPVWr3Pf2BRPzojjyo"],
     "id": "1"
 }' http://localhost:5001/api
 
+curl -i -X POST -H "Content-Type: application/json; indent=4"    -d '{
+    "jsonrpc": "2.0",
+    "method": "import_account",
+    "params": {"mnemonic":"express rare deer foam soccer limit reflect luggage assault false major evil bunker rice pact", "seed_passphrase":"tester", "enc_passphrase":"123456"},
+    "id": "1"
+}' http://localhost:5001/api
 
 curl -i -X POST -H "Content-Type: application/json; indent=4"    -d '{
     "jsonrpc": "2.0",
     "method": "sign",
-    "params": {"pkh":"tz1NDu5t2crsfJJujYMYgWmDW68pe9JB3GMb", "passphrase":"123456", "data":"9a4d6f3c1424f28469ed6cd8e2b3f87f34b65e70a8875b4b11a123572ad5cc23080000c3f6cdae8399645e28fadd1cecf9978ad3f7baef904ecfd409c80100660000c3f6cdae8399645e28fadd1cecf9978ad3f7baef00"},
+    "params": {"pkh":"tz1SyKx9ZMq1mcfqsjHPVWr3Pf2BRPzojjyo", "passphrase":"123456", "data":"9a4d6f3c1424f28469ed6cd8e2b3f87f34b65e70a8875b4b11a123572ad5cc23080000c3f6cdae8399645e28fadd1cecf9978ad3f7baef904ecfd409c80100660000c3f6cdae8399645e28fadd1cecf9978ad3f7baef00"},
     "id": "1"
 }' http://localhost:5001/api
 

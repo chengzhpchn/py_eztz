@@ -17,6 +17,10 @@ def generateMnemonic():
     m = Mnemonic('english')
     return m.generate(160)
 
+def checkMnemonic(mnemonic):
+    m = Mnemonic('english')
+    return m.check(mnemonic)
+
 def generateKeys(m, p):
     s = Mnemonic.to_seed(m, p)
     pk, sk = pysodium.crypto_sign_seed_keypair(s[:32])

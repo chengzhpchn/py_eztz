@@ -27,7 +27,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 from flask import Flask
-from flask_jsonrpc import JSONRPC
+from flask_jsonrpc import JSONRPC, InvalidParamsError
 import crypto
 import json
 from binascii import b2a_hex, a2b_hex
@@ -41,55 +41,67 @@ jsonrpc = JSONRPC(app, '/api', enable_web_browsable_api=True)
 def index():
     return 'Welcome to Flask JSON-RPC'
 
+str2bytes = lambda s: bytes(s, "utf-8")
+bytes2str = lambda b: str(b, "utf-8")
+
 @jsonrpc.method('new_account') # (passphrase=String) -> String
 def new_account(passphrase):
     pkh, pk, sk = crypto.generateKeysNoSeed()
 
     # save the encrypted sk
-    encrypted_sk = crypto.aes_encrypt(sk, passphrase.encode('utf-8'))
+    encrypted_sk = crypto.aes_encrypt(sk, str2bytes(passphrase))
     AccountManager.save_account(pkh, pk, encrypted_sk)
 
-    return pkh.decode('utf-8')
+    return bytes2str(pkh)
+
+@jsonrpc.method('import_account(mnemonic=String, seed_passphrase=String, enc_passphrase=String) -> String')
+def import_account(mnemonic, seed_passphrase, enc_passphrase):
+    if not crypto.checkMnemonic(str2bytes(mnemonic)):
+        raise InvalidParamsError("Invalid mnemonic")
+
+    pkh, pk, sk = crypto.generateKeys(str2bytes(mnemonic), str2bytes(seed_passphrase))
+    encrypted_sk = crypto.aes_encrypt(sk, str2bytes(enc_passphrase))
+
+    AccountManager.save_account(pkh, pk, encrypted_sk)
+
+    return bytes2str(pkh)
 
 @jsonrpc.method('chk_address')
 def chk_address(tz1_address):
-    return crypto.checkAddress(tz1_address)
+    return crypto.checkAddress(str2bytes(tz1_address))
 
 @jsonrpc.method('sign(pkh=String, passphrase=String, data=String) -> dict')
 def sign(pkh, passphrase, data):
-    pkh = pkh.encode('utf-8')
-    result = []
-    err = AccountManager.load_account(pkh, result)
-    if err:
-        return err
-    _, encrypted_sk = result[0]
-    sk = crypto.aes_decrypt(encrypted_sk, passphrase.encode('utf-8'))
+    _, encrypted_sk = AccountManager.load_account(str2bytes(pkh))
+    sk = crypto.aes_decrypt(encrypted_sk, str2bytes(passphrase))
+    if not sk.startswith(b'edsk'):
+        raise InvalidParamsError("passphrase error")
     sigs = crypto.sign( a2b_hex(data), sk, crypto.watermark_generic)
-    return {'edsig':sigs['edsig'].decode('utf-8'),
-            'sbytes':b2a_hex( sigs['sbytes'] ).decode('utf-8')}
+    return {'edsig':bytes2str(sigs['edsig']),
+            'sbytes':bytes2str( b2a_hex( sigs['sbytes'] ) )}
 
 class AccountManager:
     account_file_fmt = "./accounts/py-eztz-account-%s.json"
 
     @classmethod
     def save_account(cls, pkh, pk, encrypted_sk):
-        filename = cls.account_file_fmt % pkh.decode('utf-8')
+        filename = cls.account_file_fmt % bytes2str(pkh)
         with open(filename, 'w') as fw:
             data = {
-                'public-key' : pk.decode('utf-8'),
-                'encrypted-private-key' : b2a_hex(encrypted_sk).decode('utf-8')
+                'public-key' : bytes2str(pk),
+                'encrypted-private-key' : bytes2str(b2a_hex(encrypted_sk))
             }
             fw.write(json.dumps(data))
 
     @classmethod
-    def load_account(cls, pkh, result):
+    def load_account(cls, pkh):
         import os
-        filename = cls.account_file_fmt % pkh.decode('utf-8')
+        filename = cls.account_file_fmt % bytes2str(pkh)
         if not os.path.exists(filename):
-            return "account[%s] not exist" % pkh.decode('utf-8')
+            raise InvalidParamsError("account[%s] not exist" % bytes2str(pkh))
         with open(filename, 'r') as fr:
             data = json.loads(fr.read())
-            result.append( (data['public-key'].encode('utf-8'), a2b_hex(data['encrypted-private-key'])) )
+            return str2bytes(data['public-key']), a2b_hex(data['encrypted-private-key'])
 
 
 if __name__ == '__main__':
