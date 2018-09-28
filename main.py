@@ -90,6 +90,8 @@ class AccountManager:
     buff = {} # pkh :  (pk, enc_sk)
     @classmethod
     def save_account(cls, pkh, pk, encrypted_sk):
+        if pkh in cls.buff:
+            cls.buff.pop( pkh )
         filename = cls.account_file_fmt % bytes2str(pkh)
         with open(filename, 'w') as fw:
             data = {
