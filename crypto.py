@@ -5,6 +5,7 @@ from Crypto.Cipher import AES
 import utility
 
 prefix_tz1 = bytes([6, 161, 159])
+prefix_KT1 = bytes([2, 90, 121])
 prefix_edpk = bytes([13, 15, 37, 217])
 prefix_edsk = bytes([43, 246, 78, 7])
 prefix_edsig = bytes([9, 245, 205, 134, 18])
@@ -33,8 +34,13 @@ def generateKeysNoSeed():
     return utility.base58Encode(prefix_tz1, pkh), utility.base58Encode(prefix_edpk, pk), utility.base58Encode(prefix_edsk, sk)
 
 def checkAddress(pkh):
+    address_type = {
+        b'KT1' : prefix_KT1,
+        b'tz1' : prefix_tz1,
+    }
     try:
-        utility.base58Decode(prefix_tz1, pkh)
+        prefix = address_type[pkh[:3]]
+        utility.base58Decode(prefix, pkh)
         return True
     except:
         return False
