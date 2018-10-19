@@ -75,6 +75,14 @@ def get_publickey(tz1_address):
     pk, _ = AccountManager.load_account(str2bytes(tz1_address))
     return bytes2str(pk)
 
+@jsonrpc.method('get_privatekey(pkh=String, passphrase=String) -> String')
+def get_privatekey(pkh, passphrase):
+    _, encrypted_sk = AccountManager.load_account(str2bytes(pkh))
+    sk = crypto.aes_decrypt(encrypted_sk, str2bytes(passphrase))
+    if not sk.startswith(b'edsk'):
+        raise InvalidParamsError("passphrase error")
+    return bytes2str(sk)
+
 @jsonrpc.method('sign(pkh=String, passphrase=String, data=String) -> dict')
 def sign(pkh, passphrase, data):
     _, encrypted_sk = AccountManager.load_account(str2bytes(pkh))
