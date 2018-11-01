@@ -19,6 +19,7 @@ cache:
 
 before_script:
   - python3.6 -V               # Print out python version for debugging
+  - echo 
 
 
 after_script:
@@ -34,7 +35,7 @@ mvs_build:
   tags:
     - czp
   script:
-    - echo "run mvs build ..."
+    - echo "run mvs build @" `pwd`
 
 mvs_deploy:
   stage: deploy
