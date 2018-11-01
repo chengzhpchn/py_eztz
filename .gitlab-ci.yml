@@ -31,15 +31,21 @@ stages:
 
 mvs_build:
   stage: build
+  tags:
+    - czp
   script:
     - echo "run mvs build ..."
 
 mvs_deploy:
   stage: deploy
+  tags:
+    - czp
   script:
     - echo "run mvs deploy ..."
 
 mvs_test:
   stage: test
+  tags:
+    - czp
   script:
     - echo "run mvs test ..."
